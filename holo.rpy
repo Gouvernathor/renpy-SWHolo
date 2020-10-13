@@ -9,26 +9,59 @@ define holovalues = {'tintcolor' : '#06f', # la couleur dans laquelle sera teint
 init python:
     from pygame_sdl2 import Rect
 
-    def blink(trans, st, at):
-        if renpy.random.random() < holovalues['blinking']:
-            trans.alpha = holovalues['blinkalpha']
+    def blink(trans, st, at, blinking, blinkalpha):
+        if renpy.random.random() < blinking:
+            trans.alpha = blinkalpha
         else:
             trans.alpha = 1
         return 0
 
-    def Holo(child, tintcolor=holovalues['tintcolor'], totalpha=holovalues['totalpha'], interalpha=holovalues['interalpha'], lineheight=holovalues['lineheight']):
-        child = renpy.easy.displayable(child)
-        w, h = renpy.display.render.render(child, 0, 0, 0, 0).get_size()
-        # only way I found to get the correct size !
-        masq = HoloMask(w, h, totalpha, interalpha, lineheight)
-        tinted = im.MatrixColor(child, im.matrix.desaturate()*im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.25))
-        # tinted = im.MatrixColor(child, im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.2))
-        return At(AlphaMask(tinted, masq), Transform(function=blink))
+    class Holo(renpy.Displayable):
+        """
+        Custom Displayable
+        Displays its child with a star wars-styled hologram effect,
+        including tint, transparency, blinking and interlacing effects
+        """
+        def __init__(self, child,
+                     tintcolor=holovalues['tintcolor'],
+                     totalpha=holovalues['totalpha'],
+                     interalpha=holovalues['interalpha'],
+                     blinking=holovalues['blinking'],
+                     blinkalpha=holovalues['blinkalpha'],
+                     lineheight=holovalues['lineheight'],
+                     **kwargs
+                     ):
+            super(Holo, self).__init__(**kwargs)
+            self.child = renpy.displayable(child)
+            self.tintcolor = tintcolor
+            self.totalpha = totalpha
+            self.interalpha = interalpha
+            self.blinking = blinking
+            self.blinkalpha = blinkalpha
+            self.lineheight = lineheight
+
+            self.alpha = totalpha
+
+        def render(self, width, height, st, at):
+            nwidth, nheight = renpy.render(self.child, width, height, st, at).get_size()
+            masq = HoloMask(nwidth, nheight, self.alpha, self.interalpha, self.lineheight)
+            tinted = im.MatrixColor(self.child, im.matrix.desaturate()*im.matrix.tint(*Color(self.tintcolor).rgb)*im.matrix.brightness(.25))
+            t = Transform(AlphaMask(tinted, masq), function=renpy.curry(blink)(blinking=self.blinking, blinkalpha=self.blinkalpha))
+            rv = renpy.Render(nwidth, nheight)
+            rv.blit(renpy.render(t, nwidth, nheight, st, at), (0, 0))
+            return rv
+
+        def event(self, ev, x, y, st):
+            return self.child.event(ev, x, y, st)
+
+        def visit(self):
+            return [self.child]
 
     class HoloMask(renpy.Displayable):
         """
         Custom Displayable
         used by Holo to get the alpha mask to apply to the child
+        manages the interlacing effect ant the overall alpha
         """
         def __init__(self, width, height, totalpha, interalpha, lineheight):
             super(HoloMask, self).__init__()
@@ -39,7 +72,7 @@ init python:
             self.lineheight = lineheight
 
         def render(self, width, height, st, at):
-            rv = renpy.display.render.Render(self.width, self.height)
+            rv = renpy.Render(self.width, self.height)
             cv = rv.canvas()
             ytot = 0
             lcount = 0
