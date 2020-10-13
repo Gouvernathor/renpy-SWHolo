@@ -1,6 +1,8 @@
 # renpy-SWHolo
 A way to display images (or other displayables) with a star wars-styled hologram effect, including tint, transparency, blinking and interlacing effects.
 
+![](SWHolo.gif)
+
 The `holo.rpy` file contains the code itself.
 
 The `script.rpy` file contains an example as to how to use it.
