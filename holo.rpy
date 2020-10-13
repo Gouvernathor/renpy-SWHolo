@@ -6,9 +6,6 @@ define holovalues = {'tintcolor' : '#06f', # la couleur dans laquelle sera teint
                      'lineheight' : 4 # la hauteur des lignes affichées sur l'hologramme
                      }
 
-transform functransform(funk):
-    function funk
-
 init python:
     from pygame_sdl2 import Rect
 
@@ -26,7 +23,7 @@ init python:
         masq = HoloMask(w, h, totalpha, interalpha, lineheight)
         tinted = im.MatrixColor(child, im.matrix.desaturate()*im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.25))
         # tinted = im.MatrixColor(child, im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.2))
-        return At(AlphaMask(tinted, masq), functransform(blink))
+        return At(AlphaMask(tinted, masq), Transform(function=blink))
 
     class HoloMask(renpy.Displayable):
         """
