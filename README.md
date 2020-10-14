@@ -28,3 +28,6 @@ The main thing you want to use is this :
 - `tintcolor`, `totalpha`, `interalpha`, `blinking`, `blinkalpha` and `lineheight` are the parameters described above, which can be ignored to use the default system-wide values, or specified to override them.
 
 Then, you can define your hologram as an image to show afterward, using `image hologram = Holo("beautifulcharacter angry")`, or you can also directly show it using `show expression Holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
+
+## Terms of use
+Use it freely in any project, just drop my name in the credits with a link to this repo 🥰
