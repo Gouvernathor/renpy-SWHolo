@@ -39,13 +39,15 @@ init python:
             self.blinking = blinking
             self.blinkalpha = blinkalpha
             self.lineheight = lineheight
-
             self.alpha = totalpha
 
         def render(self, width, height, st, at):
             nwidth, nheight = renpy.render(self.child, width, height, st, at).get_size()
             masq = HoloMask(nwidth, nheight, self.alpha, self.interalpha, self.lineheight)
-            tinted = im.MatrixColor(self.child, im.matrix.desaturate()*im.matrix.tint(*Color(self.tintcolor).rgb)*im.matrix.brightness(.25))
+            if config.gl2:
+                tinted = Transform(self.child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(self.tintcolor))*SaturationMatrix(0))
+            else:
+                tinted = im.MatrixColor(self.child, im.matrix.desaturate()*im.matrix.tint(*Color(self.tintcolor).rgb)*im.matrix.brightness(.25))
             t = Transform(AlphaMask(tinted, masq), function=renpy.curry(blink)(blinking=self.blinking, blinkalpha=self.blinkalpha))
             rv = renpy.Render(nwidth, nheight)
             rv.blit(renpy.render(t, nwidth, nheight, st, at), (0, 0))
