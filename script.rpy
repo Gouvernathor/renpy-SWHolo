@@ -12,7 +12,7 @@ label start:
     pause
     show eileen happy
     pause
-    show expression Holo("eileen happy") as eileen
+    show expression holo("eileen happy") as eileen
     pause
 
     # This ends the game.
