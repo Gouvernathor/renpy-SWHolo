@@ -22,12 +22,13 @@ Its keys are :
 
 The main thing you want to use is this :
 
-`Holo(child, tintcolor=holovalues['tintcolor'], totalpha=holovalues['totalpha'], interalpha=holovalues['interalpha'], blinking=holovalues['blinking'], blinkalpha=holovalues['blinkalpha'], lineheight=holovalues['lineheight'])`
+`holo(child, tintcolor=holovalues['tintcolor'], totalpha=holovalues['totalpha'], interalpha=holovalues['interalpha'], blinking=holovalues['blinking'], blinkalpha=holovalues['blinkalpha'], lineheight=holovalues['lineheight'])`
 
 - `child` is the displayable (~= image) you want to apply the effect to. You can put a generated displayable (like a `Crop()` or a `Solid()`) or a string giving the name of an image. In the `script.rpy` example it's an implicitly-declared image.
 - `tintcolor`, `totalpha`, `interalpha`, `blinking`, `blinkalpha` and `lineheight` are the parameters described above, which can be ignored to use the default system-wide values, or specified to override them.
 
-Then, you can define your hologram as an image to show afterward, using `image hologram = Holo("beautifulcharacter angry")`, or you can also directly show it using `show expression Holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
+Then, you can define your hologram as an image to show afterward, using `image hologram = holo("beautifulcharacter angry")`, or you can also directly show it using `show expression holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
+You can also apply it as a transform, with `show beautiful as holo` or `show beautiful as renpy.curry(holo)(tintcolor='#f00')` or even `show layer master at holo`.
 
 ## Terms of use
 Use it freely in any project, just drop my name in the credits with a link to this repo 🥰
