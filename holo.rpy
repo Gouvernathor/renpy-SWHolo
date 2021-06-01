@@ -31,7 +31,7 @@ init python:
         including tint, transparency, blinking and interlacing effects
         """
         if tintcolor:
-            if config.gl2:
+            if renpy.display.render.models:
                 tinted = Transform(child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0))
             else:
                 tinted = im.MatrixColor(child, im.matrix.desaturate()*im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.25))
