@@ -28,7 +28,7 @@ The main thing you want to use is this :
 - `tintcolor`, `totalpha`, `interalpha`, `blinking`, `blinkalpha` and `lineheight` are the parameters described above, which can be ignored to use the default system-wide values, or specified to override them.
 
 Then, you can define your hologram as an image to show afterward, using `image hologram = holo("beautifulcharacter angry")`, or you can also directly show it using `show expression holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
-You can also apply it as a transform, with `show beautiful as holo` or `show beautiful as renpy.curry(holo)(tintcolor='#f00')` or even `show layer master at holo`.
+You can also apply it as a transform, with `show beautiful at holo` or `show beautiful at renpy.curry(holo)(tintcolor='#f00')` or even `show layer master at holo`.
 
 ## Terms of use
 Use it freely in any project, just drop my name in the credits with a link to this repo 🥰
