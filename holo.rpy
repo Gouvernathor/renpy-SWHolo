@@ -1,10 +1,9 @@
-define holovalues = {'tintcolor' : '#06f', # la couleur dans laquelle sera teinte l'image
-                     'totalpha' : .9, # la transparence "globale" de l'hologramme
-                     'interalpha' : .75, # la transparence additionnelle appliquée une ligne sur deux
-                     'blinking' : .5, # la fréquence à laquelle une frame sera rendue plus transparente que les autres (pour l'effet de clignotement)
-                     'blinkalpha' : .9, # la transparence additionnelle appliquée pour l'effet de clignotement
-                     'lineheight' : 4 # la hauteur des lignes affichées sur l'hologramme
-                     }
+define holovalues.tintcolor = '#06f' # la couleur dans laquelle sera teinte l'image
+define holovalues.totalpha = .9 # la transparence "globale" de l'hologramme
+define holovalues.interalpha = .75 # la transparence additionnelle appliquée une ligne sur deux
+define holovalues.blinking = .5 # la fréquence à laquelle une frame sera rendue plus transparente que les autres (pour l'effet de clignotement)
+define holovalues.blinkalpha = .9 # la transparence additionnelle appliquée pour l'effet de clignotement
+define holovalues.lineheight = 4 # la hauteur des lignes affichées sur l'hologramme
 
 init python:
     from pygame_sdl2 import Rect
@@ -17,12 +16,12 @@ init python:
         return 0
 
     def holo(child,
-             tintcolor=holovalues['tintcolor'],
-             totalpha=holovalues['totalpha'],
-             interalpha=holovalues['interalpha'],
-             blinking=holovalues['blinking'],
-             blinkalpha=holovalues['blinkalpha'],
-             lineheight=holovalues['lineheight'],
+             tintcolor=holovalues.tintcolor,
+             totalpha=holovalues.totalpha,
+             interalpha=holovalues.interalpha,
+             blinking=holovalues.blinking,
+             blinkalpha=holovalues.blinkalpha,
+             lineheight=holovalues.lineheight,
              **kwargs
              ):
         """
@@ -39,7 +38,7 @@ init python:
             tinted = child
         hollo = Holo(tinted, totalpha, interalpha, lineheight, **kwargs)
         if blinking != .0 and blinkalpha != 1.0:
-            return Transform(hollo, function=renpy.curry(blink)(blinking=blinking, blinkalpha=blinkalpha))
+            return Transform(hollo, function=renpy.partial(blink, blinking=blinking, blinkalpha=blinkalpha))
         else:
             return hollo
 
