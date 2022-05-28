@@ -13,12 +13,12 @@ They can all be overriden for each separate instance of the effect.
 ## Howto
 The 6 parameters used to customize the effect on a project-wide basis are stored in the `holovalues` namespace at the top of the file.
 Its values are :
-- `'tintcolor'` : the color used to tint the hologram. (default is `#06f`, a shade of blue)
-- `'totalpha'` : the overall transparency of the hologram. That's the most opaque any pixel of it will be visible. (From 0.0 being invisible to 1.0 being completely opaque, default is .9)
-- `'interalpha'` : the relative transparency applied every two lines to create the interlacing effect. It gets multiplied to the overall transparency. (default is .75)
-- `'blinking'` : the probability for every single frame to be a "blinking" (more transparent) frame. (From 0.0 being always more transparent to 1.0 being never more transparent, effectively disabling the blinking effect, default is .5)
-- `'blinkalpha'` : the relative transparency applied to the "blinking" frames. It gets multiplied with the overall transparency and the interlacing transparency for the affected lines. (From 0.0 being invisible to 1.0 being completely opaque, effectively disabling the blinking effect, default is .9)
-- `'lineheight'` : the height of the lines used in the interlacing effect, in pixels. (default is 4)
+- `tintcolor` : the color used to tint the hologram. (default is `#06f`, a shade of blue)
+- `totalpha` : the overall transparency of the hologram. That's the most opaque any pixel of it will be visible. (From 0.0 being invisible to 1.0 being completely opaque, default is .9)
+- `interalpha` : the relative transparency applied every two lines to create the interlacing effect. It gets multiplied to the overall transparency. (default is .75)
+- `blinking` : the probability for every single frame to be a "blinking" (more transparent) frame. (From 0.0 being always more transparent to 1.0 being never more transparent, effectively disabling the blinking effect, default is .5)
+- `blinkalpha` : the relative transparency applied to the "blinking" frames. It gets multiplied with the overall transparency and the interlacing transparency for the affected lines. (From 0.0 being invisible to 1.0 being completely opaque, effectively disabling the blinking effect, default is .9)
+- `lineheight` : the height of the lines used in the interlacing effect, in pixels. (default is 4)
 
 The main thing you want to use is this :
 
