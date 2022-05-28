@@ -11,8 +11,8 @@ All 6 parameters' default values are defined in the beginning of the file and ar
 They can all be overriden for each separate instance of the effect.
 
 ## Howto
-The 6 parameters used to customize the effect on a project-wide basis are stored in the `holovalues` dict at the top of the file.
-Its keys are :
+The 6 parameters used to customize the effect on a project-wide basis are stored in the `holovalues` namespace at the top of the file.
+Its values are :
 - `'tintcolor'` : the color used to tint the hologram. (default is `#06f`, a shade of blue)
 - `'totalpha'` : the overall transparency of the hologram. That's the most opaque any pixel of it will be visible. (From 0.0 being invisible to 1.0 being completely opaque, default is .9)
 - `'interalpha'` : the relative transparency applied every two lines to create the interlacing effect. It gets multiplied to the overall transparency. (default is .75)
@@ -22,13 +22,13 @@ Its keys are :
 
 The main thing you want to use is this :
 
-`holo(child, tintcolor=holovalues['tintcolor'], totalpha=holovalues['totalpha'], interalpha=holovalues['interalpha'], blinking=holovalues['blinking'], blinkalpha=holovalues['blinkalpha'], lineheight=holovalues['lineheight'])`
+`holo(child, tintcolor=holovalues.tintcolor, totalpha=holovalues.totalpha, interalpha=holovalues.interalpha, blinking=holovalues.blinking, blinkalpha=holovalues.blinkalpha, lineheight=holovalues.lineheight)`
 
-- `child` is the displayable (~= image) you want to apply the effect to. You can put a generated displayable (like a `Crop()` or a `Solid()`) or a string giving the name of an image. In the `script.rpy` example it's an implicitly-declared image.
+- `child` is the [displayable](https://www.renpy.org/doc/html/displayables.html) (~= image) you want to apply the effect to. You can put a generated displayable (like a `Crop()` or a `Solid()`) or a string giving the name of an image. In the `script.rpy` example it's an implicitly-declared image.
 - `tintcolor`, `totalpha`, `interalpha`, `blinking`, `blinkalpha` and `lineheight` are the parameters described above, which can be ignored to use the default system-wide values, or specified to override them.
 
-Then, you can define your hologram as an image to show afterward, using `image hologram = holo("beautifulcharacter angry")`, or you can also directly show it using `show expression holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
-You can also apply it as a transform, with `show beautiful at holo` or `show beautiful at renpy.curry(holo)(tintcolor='#f00')` or even `show layer master at holo`.
+Then, you can define your hologram as an image to show afterward, using `image hologram = At("beautifulcharacter angry", holo)`, or you can also directly show it using `show expression holo("beautifulcharacter angry") as beautifulcharacter` (I strongly recommand using the `as` clause).
+You can also apply it as a transform, with `show beautiful at holo` or `show beautiful at functools.partial(holo, tintcolor='#f00')` or even `show layer master at holo` - although that last one isn't very beautiful.
 
 ## Terms of use
 Use it freely in any project, just drop my name in the credits with a link to this repo 🥰
