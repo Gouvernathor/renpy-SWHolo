@@ -6,6 +6,7 @@ define holovalues.blinkalpha = .9 # la transparence additionnelle appliquée pou
 define holovalues.lineheight = 4 # la hauteur des lignes affichées sur l'hologramme
 
 init python:
+    from functools import partial
     from pygame_sdl2 import Rect
 
     def blink(trans, st, at, blinking, blinkalpha):
@@ -32,9 +33,12 @@ init python:
             tinted = Transform(child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0))
         else:
             tinted = child
-        hollo = Holo(tinted, totalpha, interalpha, lineheight, **kwargs)
+        if lineheight and (interalpha != 1.0):
+            hollo = Holo(tinted, totalpha, interalpha, lineheight, **kwargs)
+        else:
+            hollo = Transform(tinted, alpha=totalpha, **kwargs)
         if blinking != .0 and blinkalpha != 1.0:
-            return Transform(hollo, function=renpy.partial(blink, blinking=blinking, blinkalpha=blinkalpha))
+            return Transform(hollo, function=partial(blink, blinking=blinking, blinkalpha=blinkalpha))
         else:
             return hollo
 
@@ -52,15 +56,8 @@ init python:
 
         def render(self, width, height, st, at):
             nwidth, nheight = renpy.render(self.child, width, height, st, at).get_size()
-            if self.lineheight and (self.interalpha != 1.0):
-                masq = HoloMask(nwidth, nheight, self.totalpha, self.interalpha, self.lineheight)
-                t = AlphaMask(self.child, masq)
-            else:
-                t = Transform(self.child, alpha=self.totalpha)
-            return t.render(width, height, st, at)
-
-        def event(self, ev, x, y, st):
-            return self.child.event(ev, x, y, st)
+            masq = HoloMask(nwidth, nheight, self.totalpha, self.interalpha, self.lineheight)
+            return renpy.render(AlphaMask(self.child, masq), width, height, st, at)
 
         def visit(self):
             return [self.child]
