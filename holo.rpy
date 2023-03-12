@@ -93,11 +93,10 @@ init python:
                                            0,
                                            0,
                                            255*trp)),
-                        Rect(0,
-                             ytot,
-                             self.width,
-                             self.lineheight if (ytot+self.lineheight < self.height) else (self.height-ytot))
-                        )
+                        (0,
+                         ytot,
+                         self.width,
+                         self.lineheight if (ytot+self.lineheight < self.height) else (self.height-ytot)))
                 ytot += self.lineheight
                 lcount += 1
             return rv
