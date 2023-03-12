@@ -69,7 +69,9 @@ init python:
         """
         Custom Displayable
         used by Holo to get the alpha mask to apply to the child
-        manages the interlacing effect ant the overall alpha
+        manages the interlacing effect and the overall alpha
+
+        Works better visually than a Tile of a Vbox of two Solid.
         """
         def __init__(self, width, height, totalpha, interalpha, lineheight):
             super(HoloMask, self).__init__()
