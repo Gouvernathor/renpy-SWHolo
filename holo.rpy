@@ -22,18 +22,14 @@ init python:
              blinking=holovalues.blinking,
              blinkalpha=holovalues.blinkalpha,
              lineheight=holovalues.lineheight,
-             **kwargs
-             ):
+             **kwargs):
         """
         A transform in the style of a renpy function
         Displays its child with a star wars-styled hologram effect,
         including tint, transparency, blinking and interlacing effects
         """
         if tintcolor:
-            if renpy.display.render.models:
-                tinted = Transform(child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0))
-            else:
-                tinted = im.MatrixColor(child, im.matrix.desaturate()*im.matrix.tint(*Color(tintcolor).rgb)*im.matrix.brightness(.25))
+            tinted = Transform(child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0))
         else:
             tinted = child
         hollo = Holo(tinted, totalpha, interalpha, lineheight, **kwargs)
