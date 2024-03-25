@@ -7,95 +7,75 @@ define holovalues.lineheight = 4 # la hauteur des lignes affichées sur l'hologr
 
 init python:
     from functools import partial
-    from pygame_sdl2 import Rect
+    import random
 
-    def blink(trans, st, at, blinking, blinkalpha):
-        if renpy.random.random() < blinking:
-            trans.alpha = blinkalpha
-        else:
-            trans.alpha = 1
-        return 0
+    renpy.register_shader("gouvernathor.holostripes",
+        variables="""
+            uniform mat4 u_tintermatr;
+            uniform float u_totalpha;
+            uniform float u_interalpha;
+            uniform float u_lineheight; // support absolute numbers of pixels
 
-    def holo(child,
-             tintcolor=holovalues.tintcolor,
-             totalpha=holovalues.totalpha,
-             interalpha=holovalues.interalpha,
-             blinking=holovalues.blinking,
-             blinkalpha=holovalues.blinkalpha,
-             lineheight=holovalues.lineheight,
-             **kwargs):
-        """
-        A transform in the style of a renpy function
-        Displays its child with a star wars-styled hologram effect,
-        including tint, transparency, blinking and interlacing effects
-        """
-        if tintcolor:
-            tinted = Transform(child, matrixcolor=BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0))
-        else:
-            tinted = child
-        if lineheight and (interalpha != 1.0):
-            hollo = Holo(tinted, totalpha, interalpha, lineheight, **kwargs)
-        else:
-            hollo = Transform(tinted, alpha=totalpha, **kwargs)
-        if blinking != .0 and blinkalpha != 1.0:
-            return Transform(hollo, function=partial(blink, blinking=blinking, blinkalpha=blinkalpha))
-        else:
-            return hollo
+            attribute vec2 a_tex_coord;
+            varying vec2 v_tex_coord;
+            uniform float u_lod_bias;
+            uniform sampler2D tex0;
+        """, vertex_220="""
+            v_tex_coord = a_tex_coord;
+        """, fragment_220="""
+            float thisalpha = u_totalpha;
+            if (mod(v_tex_coord.y, 2*u_lineheight) > lineheight) {
+                thisalpha = thisalpha * interalpha;
+            }
+            gl_FragColor = u_tintermatr * texture2D(tex0, v_tex_coord.st, u_lod_bias) * thisalpha;
+        """)
 
-    class Holo(renpy.Displayable):
-        """
-        Custom Displayable
-        manages the overall transparency and the interlacing effect
-        """
-        def __init__(self, child, totalpha, interalpha, lineheight, **kwargs):
-            super(Holo, self).__init__(**kwargs)
-            self.child = renpy.displayable(child)
+    class holo(renpy.Displayable):
+        def __init__(self, child,
+                tintcolor=holovalues.tintcolor,
+                totalpha=holovalues.totalpha,
+                interalpha=holovalues.interalpha,
+                blinking=holovalues.blinking,
+                blinkalpha=holovalues.blinkalpha,
+                lineheight=holovalues.lineheight,
+                **properties):
+            super().__init__(**properties)
+            self.child = child
+            self.tintcolor = tintcolor
             self.totalpha = totalpha
             self.interalpha = interalpha
+            self.blinking = blinking
+            self.blinkalpha = blinkalpha
             self.lineheight = lineheight
-
-        def render(self, width, height, st, at):
-            nwidth, nheight = renpy.render(self.child, width, height, st, at).get_size()
-            masq = HoloMask(nwidth, nheight, self.totalpha, self.interalpha, self.lineheight)
-            return renpy.render(AlphaMask(self.child, masq), width, height, st, at)
 
         def visit(self):
             return [self.child]
 
-    class HoloMask(renpy.Displayable):
-        """
-        Custom Displayable
-        used by Holo to get the alpha mask to apply to the child
-        manages the interlacing effect and the overall alpha
-
-        Works better visually than a Tile of a Vbox of two Solid.
-        """
-        def __init__(self, width, height, totalpha, interalpha, lineheight):
-            super(HoloMask, self).__init__()
-            self.width = width
-            self.height = height
-            self.totalpha = totalpha
-            self.interalpha = interalpha
-            self.lineheight = lineheight
-
         def render(self, width, height, st, at):
-            rv = renpy.Render(self.width, self.height)
-            cv = rv.canvas()
-            ytot = 0
-            lcount = 0
-            while ytot < self.height:
-                # tracer un rectangle sur toute la largeur entre y=ytot et y=ytot+lineheight
-                trp = self.totalpha * (self.interalpha if lcount%2 else 1)
-                # trp = holovalues['totalpha'] * (lcount%2 ? holovalues['interalpha'] : 1)
-                # transparence (lcount%2 ? totalpha*interalpha : totalpha)*255
-                cv.rect(renpy.color.Color((255*trp,
-                                           0,
-                                           0,
-                                           255*trp)),
-                        (0,
-                         ytot,
-                         self.width,
-                         self.lineheight if (ytot+self.lineheight < self.height) else (self.height-ytot)))
-                ytot += self.lineheight
-                lcount += 1
+            rv = renpy.render(self.child, width, height, st, at)
+
+            rv.add_shader("gouvernathor.holostripes")
+            rv.add_shader("-renpy.texture")
+
+            tintcolor = self.tintmatrix
+            if tintcolor:
+                matrix = BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0)
+            else:
+                matrix = IdentityMatrix()
+            rv.add_uniform("u_tintermatr", matrix)
+
+            totalpha = self.totalpha
+            interalpha = self.interalpha
+            blinking = self.blinking
+            if blinking != .0 and blinkalpha != 1.:
+                renpy.redraw(self, 0)
+                if random.random() < blinking:
+                    blinkalpha = self.blinkalpha
+                    totalpha *= blinkalpha
+                    interalpha *= blinkalpha
+            rv.add_uniform("u_totalpha", totalpha)
+            rv.add_uniform("u_interalpha", interalpha)
+
+            rv.add_uniform("u_lineheight", self.lineheight)
+
             return rv
