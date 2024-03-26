@@ -16,6 +16,7 @@ init python:
             uniform float u_interalpha;
             uniform float u_lineheight; // support absolute numbers of pixels
 
+            uniform vec2 u_model_size;
             attribute vec2 a_tex_coord;
             varying vec2 v_tex_coord;
             uniform float u_lod_bias;
@@ -24,8 +25,8 @@ init python:
             v_tex_coord = a_tex_coord;
         """, fragment_220="""
             float thisalpha = u_totalpha;
-            if (mod(v_tex_coord.y, 2*u_lineheight) > lineheight) {
-                thisalpha = thisalpha * interalpha;
+            if (mod(v_tex_coord.y*u_model_size.y, 2*u_lineheight) > u_lineheight) {
+                thisalpha = thisalpha * u_interalpha;
             }
             gl_FragColor = u_tintermatr * texture2D(tex0, v_tex_coord.st, u_lod_bias) * thisalpha;
         """)
@@ -57,7 +58,7 @@ init python:
             rv.add_shader("gouvernathor.holostripes")
             rv.add_shader("-renpy.texture")
 
-            tintcolor = self.tintmatrix
+            tintcolor = self.tintcolor
             if tintcolor:
                 matrix = BrightnessMatrix(.25)*TintMatrix(Color(tintcolor))*SaturationMatrix(0)
             else:
@@ -67,6 +68,7 @@ init python:
             totalpha = self.totalpha
             interalpha = self.interalpha
             blinking = self.blinking
+            blinkalpha = self.blinkalpha
             if blinking != .0 and blinkalpha != 1.:
                 renpy.redraw(self, 0)
                 if random.random() < blinking:
